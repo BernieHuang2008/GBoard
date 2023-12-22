@@ -2,4 +2,4 @@ import random
 
 
 def ID():
-    return random.random()
+    return str(random.random())

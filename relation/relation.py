@@ -10,7 +10,7 @@ class GeoRelation:
         self.desc = description
         self.type = type
         self.objects = objects
-        self.check = checker
+        self.check = checker(*self.objects)
 
     presets = {
         'online': {
@@ -29,7 +29,7 @@ class GeoRelation:
     }
 
     @classmethod
-    def from_preset(cls, name: str, objs: dict, isMajor: bool):
+    def from_preset(cls, name: str, objs: dict):
         # get the preset
         preset = cls.presets[name]
 
@@ -52,5 +52,7 @@ class GeoRelation:
         # create the relation
         return cls(name=preset['name'],
                    description=preset['description'],
-                   type=('' if isMajor else '.') + preset['type']
+                   type=preset['type'],
+                   objects=formatted_objs,
+                   checker=preset['checker'] if 'checker' in preset else None
                    )
