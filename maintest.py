@@ -24,8 +24,8 @@ if __name__ == '__main__':
     # Create a relation
     GeoRelation.relate('online', {'target_point': point1.id, 'target_line': line1.id})
     print("[1]", point1.check_relations())
-    GeoRelation.relate('online', {'target_point': point1.id, 'target_line': line2.id})
-    print("[2]", point1.check_relations())
+    # GeoRelation.relate('online', {'target_point': point1.id, 'target_line': line2.id})
+    # print("[2]", point1.check_relations())
 
     # Check the relation
     print("[3]", point1.set(_x=Decimal(1), _y=Decimal(1)))

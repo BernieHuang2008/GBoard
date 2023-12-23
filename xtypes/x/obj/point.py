@@ -13,26 +13,59 @@ class X_OBJ_POINT(B_BASIC):
         self._x = None
         self._y = None
 
-    def movement(self) -> dict:
+    def backup(self) -> dict:
+        return {
+            '_x': self._x,
+            '_y': self._y,
+        }
+
+    def movement(self, **kwargs) -> dict:   # TODO: incompleted
         # backup
         backup = self.backup()
 
         # set unknowns
-        self._x = sympy.Symbol('_x')
-        self._y = sympy.Symbol('_y')
+        self._x = sympy.Symbol('x')
+        self._y = sympy.Symbol('y')
 
         # solve equation
         equation = self._equation()
-        solution = sympy.solve(equation, self._x, self._y)
+        solution = sympy.solve(equation, self._y, self._x)  # use x to represent y if it can't solve the actual number
+        self._solution = solution
 
+        # no solution?
         if not solution:
-            # restore
-            self._set(backup)
-            return None
-        if isinstance(solution, list):  # multiple solution
+            self._set(**backup)  # restore
+            return {
+                'status': 'error',
+                'message': 'No solution found'
+            }
+
+        # multiple solution?
+        if isinstance(solution, list):
             solution = solution[0]
 
-        return {
-            '_x': solution[self._x],
-            '_y': solution[self._y],
-        }
+        # completely solved?
+        if self._x in solution:
+            return {
+                'status': 'success',
+                'message': 'Solution found',
+                'data': {
+                    '_x': solution[self._x],
+                    '_y': solution[self._y],
+                }
+            }
+        # not solved completely
+        else:
+            # for 'online', the final solution is: the nearest point on the line
+            p = sympy.Point(backup['_x'], backup['_y'])
+            l = solution[self._y]
+            p = l.projection(p)
+            return {
+                'status': 'success',
+                'message': 'Solution found',
+                'data': {
+                    '_x': p.x,
+                    '_y': p.y,
+                }
+            }
+

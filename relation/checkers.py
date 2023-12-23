@@ -2,7 +2,7 @@ from typing import List
 
 import session
 
-
+# TODO: remove checker
 def _common_precheck(targets: List[str], types: List[str]) -> None:
     """
     [Helper] Check if the targets are formatted in the right type

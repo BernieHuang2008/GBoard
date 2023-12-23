@@ -1,7 +1,8 @@
+from typing import List
+import sympy
+
 import session
 from id import ID
-
-from sympy import Interval
 
 
 class B_BASIC:
@@ -13,6 +14,7 @@ class B_BASIC:
         # add basic attributes
         self.type = self.__class__.__name__
         self.relations = []
+        self._solution = {}
 
     def add_relation(self, relation):
         """
@@ -32,7 +34,7 @@ class B_BASIC:
                 return False
         return True
 
-    def movement(self) -> dict:
+    def movement(self, **kwargs) -> dict:
         pass
 
     def backup(self) -> dict:
@@ -68,14 +70,19 @@ class B_BASIC:
 
             # try to move
             m = self.movement()
-            if self.set(**m):
-                return True
+            if m['status'] == 'success':
+                if self.set(**m['data']):
+                    return True
 
             # restore
             self._set(**backup)
             return False
 
-    def _equation(self):
+    def _equation(self) -> List[sympy.Eq]:
+        """
+        Get the equation from all the relations
+        :return:
+        """
         equs = []
         for r_id in self.relations:
             rel = session.RELATIONS[r_id]
